@@ -416,8 +416,25 @@ def foodLogicPlan(problem) -> List:
     KB = []
 
     "*** BEGIN YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    KB = [PropSymbolExpr(pacman_str, x0, y0, time=0)]
+    KB.append(conjoin([PropSymbolExpr(food_str, x, y, time=0) for x, y in food]))
+    for t in range(50):
+        print("t = ", t)
+        KB.append(exactlyOne([PropSymbolExpr(pacman_str, x, y, time=t) for x, y in non_wall_coords]))
+        model = findModel(conjoin(KB + [conjoin([~PropSymbolExpr(food_str, x, y, time=t) for x, y in food])]))
+        if model is not False:
+            return extractActionSequence(model, actions)
+        KB.append(exactlyOne([PropSymbolExpr(action, time=t) for action in actions]))
+        KB.append(allLegalSuccessorAxioms(t + 1, walls, non_wall_coords))
+        KB.append(allLegalFoodSuccessorAxioms(t + 1, food))
     "*** END YOUR CODE HERE ***"
+
+def allLegalFoodSuccessorAxioms(t: int, foods: list[tuple]) -> Expr:
+    food_successor_axioms = []
+    for x, y in foods:
+        food_successor_axioms.append(PropSymbolExpr(food_str, x, y, time=t) % (
+                PropSymbolExpr(food_str, x, y, time=t - 1) & ~PropSymbolExpr(pacman_str, x, y, time=t - 1)))
+    return conjoin(food_successor_axioms)
 
 #______________________________________________________________________________
 # QUESTION 6
