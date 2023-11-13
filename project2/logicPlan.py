@@ -125,7 +125,18 @@ def findModelUnderstandingCheck() -> Dict[Expr, bool]:
     """
     a = Expr('A')
     "*** BEGIN YOUR CODE HERE ***"
-    return findModel(a)
+    class dummyClass:
+        """dummy('A') has representation A, unlike a string 'A' that has repr 'A'.
+        Of note: Expr('Name') has representation Name, not 'Name'.
+        """
+
+        def __init__(self, variable_name: str = 'A'):
+            self.variable_name = variable_name.lower()
+
+        def __repr__(self): 
+            return self.variable_name
+
+    return {dummyClass(): True}
     "*** END YOUR CODE HERE ***"
 
 def entails(premise: Expr, conclusion: Expr) -> bool:
@@ -142,7 +153,9 @@ def plTrueInverse(assignments: Dict[Expr, bool], inverse_statement: Expr) -> boo
     pl_true may be useful here; see logic.py for its description.
     """
     "*** BEGIN YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    if pl_true(inverse_statement, assignments):
+        return False
+    return True
     "*** END YOUR CODE HERE ***"
 
 #______________________________________________________________________________
@@ -452,9 +465,22 @@ def localization(problem, agent) -> Generator:
     KB = []
 
     "*** BEGIN YOUR CODE HERE ***"
-    util.raiseNotDefined()
-
+    KB = [conjoin([PropSymbolExpr(wall_str, x, y) for x, y in walls_list]),
+          conjoin([~PropSymbolExpr(wall_str, x, y) for x, y in all_coords if (x, y) not in walls_list])]
     for t in range(agent.num_timesteps):
+        print("t = ", t)
+        possible_locations = []
+        KB.append(pacphysicsAxioms(t, all_coords, non_outer_wall_coords, walls_grid, sensorAxioms,
+                                   allLegalSuccessorAxioms))
+        KB.append(PropSymbolExpr(agent.actions[t], time=t))
+        KB.append(fourBitPerceptRules(t, agent.getPercepts()))
+        for x, y in non_outer_wall_coords:
+            if walls_grid[x][y] is not 1:
+                if entails(conjoin(KB), ~PropSymbolExpr(pacman_str, x, y, time=t)):
+                    KB.append(~PropSymbolExpr(pacman_str, x, y, time=t))
+                else:
+                    possible_locations.append((x, y))
+        agent.moveToNextState(agent.actions[t])
         "*** END YOUR CODE HERE ***"
         yield possible_locations
 
