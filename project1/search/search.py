@@ -160,19 +160,19 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     "*** YOUR CODE HERE ***"
     priorityQueue = HPQ(problem, heuristica)
     priorityQueue.push((problem.getStartState(), []), heuristic)
-    visited = set()
+    visited = []
 
     while not priorityQueue.isEmpty():
         state, actions = priorityQueue.pop()
         if problem.isGoalState(state):
             return actions
         if state not in visited:
-            visited.add(state)
+            visited.append(state)
             successors = problem.getSuccessors(state)
             for nextState, action, cost in successors:
                 newAction = actions + [action]
                 priorityQueue.push((nextState, newAction), heuristic)
-
+    return []
 
 class HPQ(util.PriorityQueue):
     def __init__(self, problem, function):
