@@ -153,7 +153,47 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # queue = util.Queue()
+    # queue.push((problem.getStartState(), []))
+    # visited = set()
+    # while not queue.isEmpty():
+    #     state, actions = queue.pop()
+    #     if problem.isGoalState(state):
+    #         return actions
+    #     if state not in visited:
+    #         visited.add(state)
+    #         successors = problem.getSuccessors(state)
+    #         for nextState, action, _ in successors:
+    #             newAction = actions + [action]
+    #             queue.push((nextState, newAction))
+    # return []
+    priorityQueue = HPQ(problem, heuristica)
+    priorityQueue.push((problem.getStartState(), []), heuristic)
+    visited = set()
+
+    while not priorityQueue.isEmpty():
+        state, actions = priorityQueue.pop()
+        if problem.isGoalState(state):
+            return actions
+        if state not in visited:
+            visited.append(state)
+            successors = problem.getSuccessors(state)
+            for nextState, action in successors:
+                if [action] not in visited:
+                    newAction = actions + [action]
+                    priorityQueue.push((nextState, newAction), heuristic)
+    return []
+class HPQ(util.PriorityQueue):
+        def __init__(self, problem, function):
+            util.PriorityQueue.__init__(self)
+            self.function = function
+            self.problem = problem
+
+        def push(self, element, heuristic):
+            util.PriorityQueue.push(self, element, self.function(self.problem, element, heuristic))
+
+def heuristica(problem, state, heuristic):
+        return problem.getCostOfActions(state[1]) + heuristic(state[0], problem)
 
 
 # Abbreviations
