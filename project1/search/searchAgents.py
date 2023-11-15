@@ -298,7 +298,6 @@ class CornersProblem(search.SearchProblem):
         """
         "*** YOUR CODE HERE ***"
         return self.startingPosition, self.initialState
-        util.raiseNotDefined()
 
     def isGoalState(self, state: Any):
         """
@@ -483,7 +482,7 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     "*** YOUR CODE HERE ***"
     food_positions = foodGrid.asList()
 
-    if not len(food_positions):
+    if len(food_positions):
         ret = []
         for food_position in food_positions:
             distance = mazeDistance(position, food_position, problem.startingGameState)
