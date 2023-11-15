@@ -335,11 +335,9 @@ class CornersProblem(search.SearchProblem):
             nextx, nexty = int(x + dx), int(y + dy)
             hitsWall = self.walls[nextx][nexty]
             corner = state[1][:]
-
             if not hitsWall:
                 if (nextx, nexty) in self.corners:
                     corner[self.corners.index((nextx, nexty))] = 1
-
                 nextState = ((nextx, nexty), corner)
                 cost = 1
                 successors.append((nextState, action, cost))
