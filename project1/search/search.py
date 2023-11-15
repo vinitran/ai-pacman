@@ -19,6 +19,7 @@ Pacman agents (in searchAgents.py).
 
 import util
 
+
 class SearchProblem:
     """
     This class outlines the structure of a search problem, but doesn't implement
@@ -70,7 +71,8 @@ def tinyMazeSearch(problem):
     from game import Directions
     s = Directions.SOUTH
     w = Directions.WEST
-    return  [s, s, w, s, w, w, s, w]
+    return [s, s, w, s, w, w, s, w]
+
 
 def depthFirstSearch(problem: SearchProblem):
     """
@@ -104,6 +106,7 @@ def depthFirstSearch(problem: SearchProblem):
     return []
     util.raiseNotDefined()
 
+
 def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
@@ -122,6 +125,7 @@ def breadthFirstSearch(problem: SearchProblem):
                 queue.push((nextState, newAction))
     return []
     util.raiseNotDefined()
+
 
 def uniformCostSearch(problem: SearchProblem):
     """Search the node of least total cost first."""
@@ -143,6 +147,7 @@ def uniformCostSearch(problem: SearchProblem):
     return []
     util.raiseNotDefined()
 
+
 def nullHeuristic(state, problem=None):
     """
     A heuristic function estimates the cost from the current state to the nearest
@@ -150,23 +155,10 @@ def nullHeuristic(state, problem=None):
     """
     return 0
 
+
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    # queue = util.Queue()
-    # queue.push((problem.getStartState(), []))
-    # visited = set()
-    # while not queue.isEmpty():
-    #     state, actions = queue.pop()
-    #     if problem.isGoalState(state):
-    #         return actions
-    #     if state not in visited:
-    #         visited.add(state)
-    #         successors = problem.getSuccessors(state)
-    #         for nextState, action, _ in successors:
-    #             newAction = actions + [action]
-    #             queue.push((nextState, newAction))
-    # return []
     priorityQueue = HPQ(problem, heuristica)
     priorityQueue.push((problem.getStartState(), []), heuristic)
     visited = set()
@@ -176,24 +168,26 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
         if problem.isGoalState(state):
             return actions
         if state not in visited:
-            visited.append(state)
+            visited.add(state)
             successors = problem.getSuccessors(state)
-            for nextState, action in successors:
-                if [action] not in visited:
-                    newAction = actions + [action]
-                    priorityQueue.push((nextState, newAction), heuristic)
+            for nextState, action, cost in successors:
+                newAction = actions + [action]
+                priorityQueue.push((nextState, newAction), heuristic)
     return []
-class HPQ(util.PriorityQueue):
-        def __init__(self, problem, function):
-            util.PriorityQueue.__init__(self)
-            self.function = function
-            self.problem = problem
 
-        def push(self, element, heuristic):
-            util.PriorityQueue.push(self, element, self.function(self.problem, element, heuristic))
+
+class HPQ(util.PriorityQueue):
+    def __init__(self, problem, function):
+        util.PriorityQueue.__init__(self)
+        self.function = function
+        self.problem = problem
+
+    def push(self, element, heuristic):
+        util.PriorityQueue.push(self, element, self.function(self.problem, element, heuristic))
+
 
 def heuristica(problem, state, heuristic):
-        return problem.getCostOfActions(state[1]) + heuristic(state[0], problem)
+    return problem.getCostOfActions(state[1]) + heuristic(state[0], problem)
 
 
 # Abbreviations
