@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -281,7 +281,7 @@ class CornersProblem(search.SearchProblem):
         """
         Stores the walls, pacman's starting position and corners.
         """
-        self.initialState = None
+        self.initialState = [0, 0, 0, 0]
         self.walls = startingGameState.getWalls()
         self.startingPosition = startingGameState.getPacmanPosition()
         top, right = self.walls.height-2, self.walls.width-2
@@ -335,14 +335,15 @@ class CornersProblem(search.SearchProblem):
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
             hitsWall = self.walls[nextx][nexty]
-            luuGoc = state[1][:]
+            corner = state[1][:]
 
             if not hitsWall:
                 if (nextx, nexty) in self.corners:
-                    luuGoc[self.corners.index((nextx, nexty))] = 1
-                    nextState = ((nextx, nexty), luuGoc)
-                    cost = 1
-                    successors.append((nextState, action, cost))
+                    corner[self.corners.index((nextx, nexty))] = 1
+
+                nextState = ((nextx, nexty), corner)
+                cost = 1
+                successors.append((nextState, action, cost))
         self._expanded += 1 # DO NOT CHANGE
         return successors
 
@@ -482,12 +483,13 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     "*** YOUR CODE HERE ***"
     food_positions = foodGrid.asList()
 
-    if len(food_positions):
-        foodDistance = [mazeDistance(position, fp, problem.startingGameState)
-                        for fp in food_positions]
-        return max(foodDistance)
-    else:
-        return 0
+    if not len(food_positions):
+        ret = []
+        for food_position in food_positions:
+            distance = mazeDistance(position, food_position, problem.startingGameState)
+            ret.append(distance)
+        return max(ret)
+    return 0
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
@@ -518,7 +520,7 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return search.breadthFirstSearch(problem)
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -554,7 +556,9 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        if state in self.food.asList():
+            return True
+        return False
 
 def mazeDistance(point1: Tuple[int, int], point2: Tuple[int, int], gameState: pacman.GameState) -> int:
     """
