@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -110,21 +110,21 @@ def depthFirstSearch(problem: SearchProblem):
 def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
+
     queue = util.Queue()
     queue.push((problem.getStartState(), []))
-    visited = set()
+    visited = []
     while not queue.isEmpty():
         state, actions = queue.pop()
         if problem.isGoalState(state):
             return actions
         if state not in visited:
-            visited.add(state)
+            visited.append(state)
             successors = problem.getSuccessors(state)
             for nextState, action, _ in successors:
                 newAction = actions + [action]
                 queue.push((nextState, newAction))
     return []
-    util.raiseNotDefined()
 
 
 def uniformCostSearch(problem: SearchProblem):
@@ -145,7 +145,6 @@ def uniformCostSearch(problem: SearchProblem):
                 newCost = problem.getCostOfActions(newAction)
                 priorityQueue.push((nextState, newAction), newCost)
     return []
-    util.raiseNotDefined()
 
 
 def nullHeuristic(state, problem=None):
@@ -173,7 +172,6 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
             for nextState, action, cost in successors:
                 newAction = actions + [action]
                 priorityQueue.push((nextState, newAction), heuristic)
-    return []
 
 
 class HPQ(util.PriorityQueue):
